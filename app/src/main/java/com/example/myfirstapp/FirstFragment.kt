@@ -1,5 +1,6 @@
 package com.example.myfirstapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,8 @@ import java.nio.channels.Selector
  */
 class FirstFragment : Fragment() {
 
+    lateinit var  editorActivityViewModel : MyViewModel
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -27,23 +30,23 @@ class FirstFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_first, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        editorActivityViewModel = ViewModelProviders.of(activity!!).get(MyViewModel::class.java)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val editorActivityViewModel:MyViewModel = ViewModelProviders.of(activity!!).get(MyViewModel::class.java)
-        var value =  editorActivityViewModel.getNumber()
-        view.findViewById<TextView>(R.id.textview_first).setText(value.toString())
-        value.observe(this, Observer { s :String->
-            view.findViewById<TextView>(R.id.textview_first).setText(s)
-        })
+        val value =  editorActivityViewModel.getNumber()
+        view.findViewById<TextView>(R.id.textview_first).text = value.toString()
 
         view.findViewById<Button>(R.id.random_button).setOnClickListener {
-            val showCountTextView = view.findViewById<TextView>(R.id.textview_first)
-            val currentCount = showCountTextView.text.toString().toInt()
+            val currentCount = editorActivityViewModel.getNumber()
             val random = java.util.Random()
             var randomNumber = 0
             if (currentCount > 0){
-                randomNumber = random.nextInt(currentCount + 1)
+                randomNumber = random.nextInt(currentCount)
             }
             val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(currentCount,randomNumber)
             findNavController().navigate(action)
@@ -56,9 +59,10 @@ class FirstFragment : Fragment() {
 
         view.findViewById<Button>(R.id.count_button).setOnClickListener {
             val showCountTextView = view?.findViewById<TextView>(R.id.textview_first)
-            var count = showCountTextView?.text.toString().toInt()
-            count++
+            val count = editorActivityViewModel.getNumber()+1
+            showCountTextView.text = count.toString()
             editorActivityViewModel.setNumber(count)
         }
     }
+
 }

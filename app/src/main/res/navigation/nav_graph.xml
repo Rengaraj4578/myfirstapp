@@ -25,10 +25,10 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
         <argument
-            android:name="myArg"
+            android:name="count"
             app:argType="integer" />
         <argument
-            android:name="myArg2"
+            android:name="random"
             app:argType="integer" />
     </fragment>
 </navigation>
